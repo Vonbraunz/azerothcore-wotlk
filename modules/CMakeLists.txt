@@ -393,7 +393,7 @@ if (MOD_ALE_FOUND)
   endif()
 
   if (WIN32)
-    if (MSVC)
+    if (MSVC AND CMAKE_CONFIGURATION_TYPES)
       set(MSVC_CONFIGURATION_NAME $(ConfigurationName)/)
     endif()
 
