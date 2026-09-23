@@ -925,7 +925,7 @@ void Item::SetEnchantment(EnchantmentSlot slot, uint32 id, uint32 duration, uint
         return;
 
     Player* owner = GetOwner();
-    if (slot < MAX_INSPECTED_ENCHANTMENT_SLOT)
+    if (slot < MAX_INSPECTED_ENCHANTMENT_SLOT && owner && owner->GetSession())
     {
         if (uint32 oldEnchant = GetEnchantmentId(slot))
             owner->GetSession()->SendEnchantmentLog(GetOwnerGUID(), ObjectGuid::Empty, GetEntry(), oldEnchant);
