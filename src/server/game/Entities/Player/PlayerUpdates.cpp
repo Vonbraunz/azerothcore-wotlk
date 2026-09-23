@@ -1568,6 +1568,24 @@ void Player::UpdatePotionCooldown(Spell* spell)
     if (!GetLastPotionId() || IsInCombat())
         return;
 
+    // potion cooldowns are removed on this server: potion_cooldown.lua clears the
+    // category and the client's own dbc timer right after the cast, but a potion
+    // drunk in combat gets its real cooldown written HERE, on combat exit, long
+    // after that window. the client then greys the potion and answers with
+    // ERR_POTION_COOLDOWN ("You can't drink that yet") until it expires. skip real
+    // potions only; other cooldown-on-event items keep the stock behaviour.
+    //
+    // real players only. bots have no client enforcing the one-potion-per-combat
+    // rule for them, so they fall through to the stock cooldown below and stay
+    // killable. GetLastPotionId() is also what Spell::CheckCast uses to reject a
+    // bot's 2nd potion mid-fight.
+    ItemTemplate const* lastPotionProto = sObjectMgr->GetItemTemplate(GetLastPotionId());
+    if (lastPotionProto && lastPotionProto->IsPotion() && !GetSession()->IsBot())
+    {
+        SetLastPotionId(0);
+        return;
+    }
+
     // Call not from spell cast, send cooldown event for item spells if no in
     // combat
     if (!spell)
