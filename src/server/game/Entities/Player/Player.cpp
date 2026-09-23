@@ -12618,6 +12618,9 @@ float Player::GetReputationPriceDiscount(FactionTemplateEntry const* factionTemp
 
 bool Player::IsSpellFitByClassAndRace(uint32 spell_id) const
 {
+    if (!sWorld->getBoolConfig(CONFIG_VALIDATE_SKILL_LEARNED_BY_SPELLS))
+        return true;
+
     uint32 racemask  = getRaceMask();
     uint32 classmask = getClassMask();
 
@@ -14006,6 +14009,26 @@ void Player::_LoadSkills(PreparedQueryResult result)
             SkillRaceClassInfoEntry const* rcEntry = GetSkillRaceClassInfo(skill, getRace(), getClass());
             if (!rcEntry)
             {
+                if (!sWorld->getBoolConfig(CONFIG_VALIDATE_SKILL_LEARNED_BY_SPELLS))
+                {
+                    SetUInt32Value(PLAYER_SKILL_INDEX(count), MAKE_PAIR32(skill, 0));
+                    SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(count), MAKE_SKILL_VALUE(value, max));
+                    SetUInt32Value(PLAYER_SKILL_BONUS_INDEX(count), 0);
+
+                    mSkillStatus.insert(SkillStatusMap::value_type(skill, SkillStatusData(count, SKILL_UNCHANGED)));
+                    loadedSkillValues[skill] = value;
+
+                    ++count;
+
+                    if (count >= PLAYER_MAX_SKILLS)
+                    {
+                        LOG_ERROR("entities.player", "Character {} has more than {} skills.", GetGUID().ToString(), PLAYER_MAX_SKILLS);
+                        break;
+                    }
+
+                    continue;
+                }
+
                 LOG_ERROR("entities.player", "Player {} (GUID: {}), has skill ({}) that is invalid for the race/class combination (Race: {}, Class: {}). Will be deleted.",
                     GetName(), GetGUID().GetCounter(), skill, getRace(), getClass());
 
