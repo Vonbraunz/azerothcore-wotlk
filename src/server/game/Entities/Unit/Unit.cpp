@@ -457,6 +457,12 @@ Unit::Unit() : WorldObject(),
 // Methods of class Unit
 Unit::~Unit()
 {
+    // detach anyone following us. RemoveFromWorld is not the only way a unit can
+    // die, and a follower left holding a dangling _target takes the map thread
+    // down when its movement generator is destroyed (AbstractFollower::SetTarget
+    // dereferences _target). this is the crash a speed toggle could trigger.
+    RemoveAllFollowers();
+
     // set current spells as deletable
     for (uint8 i = 0; i < CURRENT_MAX_SPELL; ++i)
         if (m_currentSpells[i])
