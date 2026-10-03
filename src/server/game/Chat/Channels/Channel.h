@@ -187,6 +187,7 @@ public:
     [[nodiscard]] uint32 GetNumPlayers() const { return playersStore.size(); }
     [[nodiscard]] uint8 GetFlags() const { return _flags; }
     [[nodiscard]] bool HasFlag(uint8 flag) const { return _flags & flag; }
+    [[nodiscard]] bool IsOn(ObjectGuid who) const { return playersStore.find(who) != playersStore.end(); }
 
     void JoinChannel(Player* player, std::string const& pass);
     void LeaveChannel(Player* player, bool send = true);
@@ -269,7 +270,6 @@ private:
 
     bool ShouldAnnouncePlayer(Player const* player) const;
 
-    [[nodiscard]] bool IsOn(ObjectGuid who) const { return playersStore.find(who) != playersStore.end(); }
     [[nodiscard]] bool IsBanned(ObjectGuid guid) const;
 
     void UpdateChannelInDB() const;
