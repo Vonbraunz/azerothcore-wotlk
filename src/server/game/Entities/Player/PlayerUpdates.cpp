@@ -1599,7 +1599,7 @@ void Player::UpdatePotionCooldown(Spell* spell)
     // killable. GetLastPotionId() is also what Spell::CheckCast uses to reject a
     // bot's 2nd potion mid-fight.
     ItemTemplate const* lastPotionProto = sObjectMgr->GetItemTemplate(GetLastPotionId());
-    if (lastPotionProto && lastPotionProto->IsPotion() && !GetSession()->IsBot())
+    if (lastPotionProto && lastPotionProto->IsPotion() && !GetSession()->IsHeadless())
     {
         SetLastPotionId(0);
         return;

@@ -5888,7 +5888,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* /*param1*/, uint32* /*para
             // server (potion_cooldown.lua is their only limiter), but bots keep
             // the stock rule: nothing client side stops them and without it they
             // chain chug potions mid-fight and become unkillable.
-            if (unitCaster->ToPlayer()->GetSession()->IsBot()
+            if (unitCaster->ToPlayer()->GetSession()->IsHeadless()
                 && unitCaster->ToPlayer()->GetLastPotionId() && m_CastItem
                 && (m_CastItem->IsPotion() || m_spellInfo->IsCooldownStartedOnEvent()))
                 return SPELL_FAILED_NOT_READY;
